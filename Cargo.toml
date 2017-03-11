@@ -1,0 +1,8 @@
+[package]
+name = "docker-rust"
+version = "0.1.0"
+authors = ["Kai Strempel <kstrempel@gmail.com>"]
+
+[dependencies]
+curl = { git = "https://github.com/alexcrichton/curl-rust.git", branch = "master" }
+serde_json = "0.9"
