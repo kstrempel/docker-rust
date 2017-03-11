@@ -1,18 +1,20 @@
 #![crate_type = "lib"]
 #![crate_name = "docker_rust"]
 
+#[macro_use]
+extern crate serde_derive;
 extern crate serde_json;
 extern crate curl;
 
+pub mod schema;
 mod error;
 
 use std::str::*;
 use curl::easy::Easy;
 use error::DockerError;
+use schema::Image;
 
-use std::ops::Add;
 use std::error::Error;
-use std::io::{stdout, Write};
 
 pub struct Client {
     api_url: String,
@@ -27,43 +29,45 @@ impl Client {
             curl : Easy::new()
         };
         client.set_curl_client();
+
         client
     }
 
     pub fn from_env() -> Client {
-        Client::new("unix:///var/run/docker.sock")
+        Client::new("http:///v1.26/")
     }
 
     fn set_curl_client(&mut self) -> ()  {
         let _ = self.curl.unix_socket("/var/run/docker.sock");
     }
 
-    fn url(& mut self, url: &str) -> String {
+    fn get(& mut self, url: &str) -> Result<String, DockerError> {
         let mut result = Vec::new();
-
-        self.curl.url(url);
-        let mut transfer = self.curl.transfer();
-        transfer.write_function(|data| {
-            result.extend_from_slice(data);
-            Ok(data.len())
-        }).unwrap();
-        transfer.perform();
-
-        let mut json = String::new();
-        for entry in result {
-            json.push(entry as char)
-        }
-
-        json
+        let real_url = format!("{}{}", self.api_url, url);
+        match self.curl.url(real_url.as_str()) {
+            Ok(_) => {            
+                let mut transfer = self.curl.transfer();
+                transfer.write_function(|data| {
+                    result.extend_from_slice(data);
+                    Ok(data.len())
+                }).unwrap();
+                transfer.perform().unwrap();
+            },
+            Err(err) => {
+                print!("Mein Text {}", err.description());
+            }
+        };
+        
+        Ok(String::from_utf8(result).unwrap())
     }
 
     pub fn images(& mut self) -> Result<(), DockerError> {
-        let result = self.url("http:///v1.26/images/json");
-        print!("{:?}", result);
+        let result = self.get("images/json").unwrap();
+        let images : Vec<Image> = serde_json::from_str(result.as_str()).unwrap();
+//        print!("{:?}", images);
         Ok(())
     }
 }
-
 
 #[cfg(test)]
 mod tests {
@@ -71,8 +75,6 @@ mod tests {
     fn it_works() {
         use Client;
         let mut client = Client::from_env();
-        let _ = client.images();
-
-        assert!(false);
+        assert!(client.images().is_ok());
     }
 }
