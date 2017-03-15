@@ -6,13 +6,13 @@ extern crate serde_derive;
 extern crate serde_json;
 extern crate curl;
 
-pub mod schema;
+pub mod images;
+pub mod networks;
 mod error;
 
 use std::str::*;
 use curl::easy::Easy;
 use error::DockerError;
-use schema::Image;
 
 use std::error::Error;
 
@@ -59,22 +59,5 @@ impl Client {
         };
         
         Ok(String::from_utf8(result).unwrap())
-    }
-
-    pub fn images(& mut self) -> Result<(), DockerError> {
-        let result = self.get("images/json").unwrap();
-        let images : Vec<Image> = serde_json::from_str(result.as_str()).unwrap();
-//        print!("{:?}", images);
-        Ok(())
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    #[test]
-    fn it_works() {
-        use Client;
-        let mut client = Client::from_env();
-        assert!(client.images().is_ok());
-    }
+    }   
 }
