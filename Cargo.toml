@@ -3,6 +3,10 @@ name = "docker-rust"
 version = "0.1.0"
 authors = ["Kai Strempel <kstrempel@gmail.com>"]
 
+
+[lib]
+name="docker"
+
 [dependencies]
 curl = { git = "https://github.com/alexcrichton/curl-rust.git", branch = "master" }
 serde = "0.9"

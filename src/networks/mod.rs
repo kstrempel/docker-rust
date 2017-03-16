@@ -18,7 +18,7 @@ impl<'a> NetworksClient<'a> {
         }
     }
 
-    pub fn networks(& mut self) -> Result<Vec<Network>, DockerError> {
+    pub fn all(& mut self) -> Result<Vec<Network>, DockerError> {
         let result = self.client.get("networks").unwrap();
         let networks : Vec<Network> = serde_json::from_str(result.as_str()).unwrap();
         Ok(networks)
@@ -34,7 +34,7 @@ mod tests {
         use networks::NetworksClient;
         let mut client = Client::from_env();
         let mut image_client = NetworksClient::new(&mut client);
-        let networks = image_client.networks();
+        let networks = image_client.all();
         assert!(networks.is_ok());
         assert!(networks.unwrap().len()>1);
     }

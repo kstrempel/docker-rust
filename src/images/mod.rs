@@ -18,7 +18,7 @@ impl<'a> ImagesClient<'a> {
         }
     }
 
-    pub fn images(& mut self) -> Result<Vec<Image>, DockerError> {
+    pub fn all(& mut self) -> Result<Vec<Image>, DockerError> {
         let result = self.client.get("images/json").unwrap();
         let images : Vec<Image> = serde_json::from_str(result.as_str()).unwrap();
         Ok(images)
@@ -34,7 +34,7 @@ mod tests {
         use images::ImagesClient;
         let mut client = Client::from_env();
         let mut image_client = ImagesClient::new(&mut client);
-        let images = image_client.images();
+        let images = image_client.all();
         assert!(images.is_ok());
         assert!(images.unwrap().len()>1);
     }

@@ -1,5 +1,5 @@
 #![crate_type = "lib"]
-#![crate_name = "docker_rust"]
+#![crate_name = "docker"]
 
 #[macro_use]
 extern crate serde_derive;
@@ -12,6 +12,8 @@ mod error;
 
 use std::str::*;
 use curl::easy::Easy;
+use images::ImagesClient;
+use networks::NetworksClient;
 use error::DockerError;
 
 use std::error::Error;
@@ -60,4 +62,11 @@ impl Client {
         
         Ok(String::from_utf8(result).unwrap())
     }   
+
+    pub fn images(&mut self) -> ImagesClient {
+        ImagesClient::new(self)
+    } 
+    pub fn networks(&mut self) -> NetworksClient {
+        NetworksClient::new(self)
+    } 
 }
