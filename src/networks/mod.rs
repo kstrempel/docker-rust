@@ -2,8 +2,6 @@ pub mod schema;
 
 use serde_json;
 
-use std::cell::RefCell;
-
 use super::Client;
 use super::error::DockerError;
 use self::schema::Network;

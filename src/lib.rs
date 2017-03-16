@@ -8,14 +8,18 @@ extern crate curl;
 
 pub mod images;
 pub mod networks;
+pub mod containers;
 mod error;
 
-use std::cell::RefCell;
 use std::str::*;
+use std::cell::RefCell;
+
 use curl::easy::Easy;
-use images::ImagesClient;
-use networks::NetworksClient;
+
 use error::DockerError;
+use images::ImagesClient;
+use containers::ContainersClient;
+use networks::NetworksClient;
 
 use std::error::Error;
 
@@ -69,6 +73,10 @@ impl Client {
     pub fn images(&self) -> ImagesClient {
         ImagesClient::new(self)
     } 
+    pub fn containers(&self) -> ContainersClient {
+        ContainersClient::new(self)
+    } 
+
     pub fn networks(&self) -> NetworksClient {
         NetworksClient::new(self)
     } 
