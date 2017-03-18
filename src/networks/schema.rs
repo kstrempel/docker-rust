@@ -18,37 +18,37 @@ use std::collections::HashMap;
 #[derive(Serialize, Deserialize, Debug)]
 pub struct IPAM {
     #[serde(rename = "Driver")]
-    driver: String,
+    pub driver: String,
     #[serde(rename = "Options")]
-    options: String,
+    pub options: String,
     #[serde(rename = "Config")]
-    config: Vec<HashMap<String,String>>,    
+    pub config: Vec<HashMap<String,String>>,    
 }
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Network {
     #[serde(rename = "Name")]
-    name: String,
+    pub name: String,
     #[serde(rename = "Id")]
-    id: String,
+    pub id: String,
     #[serde(rename = "Created")]
-    created: String,
+    pub created: String,
     #[serde(rename = "Scope")]
-    scope: String,
+    pub scope: String,
     #[serde(rename = "Driver")]
-    driver: String,
+    pub driver: String,
     #[serde(rename = "EnableIPv6")]
-    enable_ip_v6: bool,
+    pub enable_ip_v6: bool,
     #[serde(rename = "Internal")]
-    internal: bool,
+    pub internal: bool,
     #[serde(rename = "Attachable")]
-    attachable: bool,
+    pub attachable: bool,
     #[serde(rename = "IPAM")]
-    ipam : IPAM,
+    pub ipam : IPAM,
     #[serde(rename = "Containers")]
-    containers : HashMap<String, HashMap<String,String>>,
+    pub containers : HashMap<String, HashMap<String,String>>,
     #[serde(rename = "Options")]
-    options : HashMap<String,String>,
+    pub options : HashMap<String,String>,
     #[serde(rename = "Labels")]
-    labels: HashMap<String, String>,    
+    pub labels: HashMap<String, String>,    
 }

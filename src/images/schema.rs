@@ -18,23 +18,23 @@ use std::collections::HashMap;
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Image {
     #[serde(rename = "Id")]
-    id: String,
+    pub id: String,
     #[serde(rename = "ParentId")]
-    parent_id: String,
+    pub parent_id: String,
     #[serde(rename = "RepoTags")]
-    repo_tags: Vec<String>,
+    pub repo_tags: Vec<String>,
     #[serde(rename = "RepoDigests")]
-    repo_digests: Vec<String>,
+    pub repo_digests: Vec<String>,
     #[serde(rename = "Created")]
-    created: u64,
+    pub created: u64,
     #[serde(rename = "Size")]
-    size: u64,
+    pub size: u64,
     #[serde(rename = "VirtualSize")]
-    virtual_size: u64,
+    pub virtual_size: u64,
     #[serde(rename = "SharedSize")]
-    shared_size: i64,
+    pub shared_size: i64,
     #[serde(rename = "Labels")]
-    labels: HashMap<String, String>,
+    pub labels: HashMap<String, String>,
     #[serde(rename = "Containers")]
-    containers: i64
+    pub containers: i64
 }
