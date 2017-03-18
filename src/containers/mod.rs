@@ -1,11 +1,10 @@
 pub mod schema;
 
-use super::common::get;
+use super::common::*;
 use super::Client;
 use super::error::DockerError;
 
 use self::schema::Container;
-
 
 pub struct ContainersClient<'a> {
     client : &'a Client

@@ -1,4 +1,3 @@
-
 use super::Client;
 use super::error::DockerError;
 use serde::Deserialize;
@@ -10,4 +9,3 @@ pub fn get<T : Deserialize> (client: &Client, path : &str) -> Result<Vec<T>, Doc
 
     Ok(images)    
 }
-

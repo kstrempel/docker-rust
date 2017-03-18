@@ -10,7 +10,6 @@ extern crate curl;
 pub mod images;
 pub mod networks;
 pub mod containers;
-#[macro_use]
 mod common;
 mod error;
 
@@ -25,6 +24,7 @@ use containers::ContainersClient;
 use networks::NetworksClient;
 
 use std::error::Error;
+
 
 pub struct Client {
     api_url: String,
