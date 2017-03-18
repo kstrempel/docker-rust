@@ -1,7 +1,6 @@
 pub mod schema;
 
-use serde_json;
-
+use super::common::get;
 use super::Client;
 use super::error::DockerError;
 
@@ -21,9 +20,7 @@ impl<'a> ContainersClient<'a> {
     }
 
     pub fn all(&self) -> Result<Vec<Container>, DockerError> {
-        let result = self.client.get("containers/json").unwrap();
-        let containers : Vec<Container> = serde_json::from_str(result.as_str()).unwrap();
-        Ok(containers)
+        get(self.client, "containers/json")
     }
 }
 

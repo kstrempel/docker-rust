@@ -1,7 +1,6 @@
 pub mod schema;
 
-use serde_json;
-
+use super::common::get;
 use super::Client;
 use super::error::DockerError;
 
@@ -21,9 +20,7 @@ impl<'a> ImagesClient<'a> {
     }
 
     pub fn all(&self) -> Result<Vec<Image>, DockerError> {
-        let result = self.client.get("images/json").unwrap();
-        let images : Vec<Image> = serde_json::from_str(result.as_str()).unwrap();
-        Ok(images)
+        get(self.client, "images/json")
     }
 }
 

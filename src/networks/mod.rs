@@ -1,8 +1,7 @@
 pub mod schema;
 
-use serde_json;
-
 use super::Client;
+use super::common::get;
 use super::error::DockerError;
 use self::schema::Network;
 
@@ -19,9 +18,7 @@ impl<'a> NetworksClient<'a> {
     }
 
     pub fn all(&self) -> Result<Vec<Network>, DockerError> {
-        let result = self.client.get("networks").unwrap();
-        let networks : Vec<Network> = serde_json::from_str(result.as_str()).unwrap();
-        Ok(networks)
+        get(self.client, "networks")
     }
 }
 

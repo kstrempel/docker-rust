@@ -1,6 +1,7 @@
 #![crate_type = "lib"]
 #![crate_name = "docker"]
 
+extern crate serde;
 #[macro_use]
 extern crate serde_derive;
 extern crate serde_json;
@@ -9,6 +10,8 @@ extern crate curl;
 pub mod images;
 pub mod networks;
 pub mod containers;
+#[macro_use]
+mod common;
 mod error;
 
 use std::str::*;
