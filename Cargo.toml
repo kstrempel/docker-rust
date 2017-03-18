@@ -1,7 +1,19 @@
+
 [package]
 name = "docker-rust"
 version = "0.1.0"
 authors = ["Kai Strempel <kstrempel@gmail.com>"]
+license = "Apache-2.0"
+homepage = "https://github.com/kstrempel/docker-rust"
+repository = "https://github.com/kstrempel/rust-kairosdb"
+documentation = "https://kstrempel.github.io/rust-kairosdb/kairosdb/index.html"
+description = "Client for Docker API"
+readme = "README.md"
+keywords = ["docker", "api", "client"]
+categories = ["docker"]
+exclude = [
+    ".*"
+]
 
 
 [lib]
