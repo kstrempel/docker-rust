@@ -12,26 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-
 pub mod schema;
 
+use super::common::*;
 use super::Client;
-use super::common::get;
 use super::error::DockerError;
+
 use self::schema::Network;
 
-pub struct NetworksClient<'a> {
-    client : &'a Client
-}
+endpoint!(NetworksClient);
 
 impl<'a> NetworksClient<'a> {
-
-    pub fn new(client : &Client) -> NetworksClient {
-        NetworksClient {
-            client : client 
-        }
-    }
-
     pub fn all(&self) -> Result<Vec<Network>, DockerError> {
         get(self.client, "networks")
     }

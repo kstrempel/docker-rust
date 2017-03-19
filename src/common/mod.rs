@@ -17,9 +17,26 @@ use super::error::DockerError;
 use serde::Deserialize;
 use serde_json;
 
+macro_rules! endpoint {
+    ($sty:ident) => (
+        pub struct $sty<'a> {
+            client : &'a Client
+        }
+
+        impl<'a> $sty<'a> {
+            pub fn new(client : &Client) -> $sty {
+                $sty {
+                    client: client
+                }
+            }
+        }
+    )
+}
+
 pub fn get<T : Deserialize> (client: &Client, path : &str) -> Result<Vec<T>, DockerError> {
     let result = client.get(path).unwrap();
     let images : Vec<T> = serde_json::from_str(result.as_str()).unwrap();
 
     Ok(images)    
 }
+

@@ -22,11 +22,13 @@ extern crate serde_derive;
 extern crate serde_json;
 extern crate curl;
 
+#[macro_use]
+mod common;
+mod error;
+
 pub mod images;
 pub mod networks;
 pub mod containers;
-mod common;
-mod error;
 
 use std::str::*;
 use std::cell::RefCell;

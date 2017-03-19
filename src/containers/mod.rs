@@ -20,17 +20,9 @@ use super::error::DockerError;
 
 use self::schema::Container;
 
-pub struct ContainersClient<'a> {
-    client : &'a Client
-}
+endpoint!(ContainersClient);
 
 impl<'a> ContainersClient<'a> {
-
-    pub fn new(client : &Client) -> ContainersClient {
-        ContainersClient {
-            client : client 
-        }
-    }
 
     pub fn all(&self) -> Result<Vec<Container>, DockerError> {
         get(self.client, "containers/json")

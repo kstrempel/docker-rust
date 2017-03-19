@@ -14,24 +14,15 @@
 
 pub mod schema;
 
-use super::common::get;
+use super::common::*;
 use super::Client;
 use super::error::DockerError;
 
 use self::schema::Image;
 
-
-pub struct ImagesClient<'a> {
-    client : &'a Client
-}
+endpoint!(ImagesClient);
 
 impl<'a> ImagesClient<'a> {
-
-    pub fn new(client : &Client) -> ImagesClient {
-        ImagesClient {
-            client : client 
-        }
-    }
 
     pub fn all(&self) -> Result<Vec<Image>, DockerError> {
         get(self.client, "images/json")
