@@ -61,7 +61,7 @@ impl Client {
     }
 
     pub fn from_env() -> Client {
-        Client::new("http:///v1.26/")
+        Client::new("http://v1.26/")
     }
 
     fn set_curl_client(&self) -> ()  {
