@@ -9,4 +9,5 @@ fn get_all(){
     assert!(client.images().all().unwrap().len()>1);
     assert!(client.containers().all().unwrap().len()>1);
     assert!(client.networks().all().unwrap().len()>1);
+    assert!(client.swarm().get().is_ok());
 }
