@@ -18,13 +18,13 @@ use super::common::*;
 use super::Client;
 use super::error::DockerError;
 
-use self::schema::Network;
+use self::schema::Swarm;
 
-endpoint!(NetworksClient);
+endpoint!(SwarmClient);
 
-impl<'a> NetworksClient<'a> {
-    pub fn all(&self) -> Result<Vec<Network>, DockerError> {
-        get_vector(self.client, "networks")
+impl<'a> SwarmClient<'a> {
+    pub fn get(&self) -> Result<Swarm, DockerError> {
+        get(self.client, "swarm")
     }
 }
 
@@ -34,11 +34,10 @@ mod tests {
     #[test]
     fn it_works() {
         use Client;
-        use networks::NetworksClient;
+        use swarm::SwarmClient;
         let client = Client::from_env();
-        let image_client = NetworksClient::new(&client);
-        let networks = image_client.all();
-        assert!(networks.is_ok());
-        assert!(networks.unwrap().len()>1);
+        let swarm_client = SwarmClient::new(&client);
+        let swarm = swarm_client.get();
+        assert!(swarm.is_ok());
     }
 }

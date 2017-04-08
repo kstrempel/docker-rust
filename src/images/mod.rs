@@ -25,7 +25,7 @@ endpoint!(ImagesClient);
 impl<'a> ImagesClient<'a> {
 
     pub fn all(&self) -> Result<Vec<Image>, DockerError> {
-        get(self.client, "images/json")
+        get_vector(self.client, "images/json")
     }
 }
 
