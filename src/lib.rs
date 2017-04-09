@@ -28,6 +28,7 @@ mod error;
 pub mod images;
 pub mod networks;
 pub mod containers;
+pub mod swarm;
 
 use std::str::*;
 use std::cell::RefCell;
@@ -38,6 +39,7 @@ use error::DockerError;
 use images::ImagesClient;
 use containers::ContainersClient;
 use networks::NetworksClient;
+use swarm::SwarmClient;
 
 use std::error::Error;
 
@@ -94,6 +96,10 @@ impl Client {
     } 
     pub fn containers(&self) -> ContainersClient {
         ContainersClient::new(self)
+    } 
+
+    pub fn swarm(&self) -> SwarmClient {
+        SwarmClient::new(self)
     } 
 
     pub fn networks(&self) -> NetworksClient {

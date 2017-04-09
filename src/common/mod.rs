@@ -33,10 +33,18 @@ macro_rules! endpoint {
     )
 }
 
-pub fn get<T : Deserialize> (client: &Client, path : &str) -> Result<Vec<T>, DockerError> {
-    let result = client.get(path).unwrap();
-    let images : Vec<T> = serde_json::from_str(result.as_str()).unwrap();
+pub fn get_vector<T : Deserialize> (client: &Client, path : &str) -> Result<Vec<T>, DockerError> {
+    let result_raw = client.get(path).unwrap();
+    let results : Vec<T> = serde_json::from_str(result_raw.as_str()).unwrap();
 
-    Ok(images)    
+    Ok(results)    
 }
+
+pub fn get<T : Deserialize> (client: &Client, path : &str) -> Result<T, DockerError> {
+    let result_raw = client.get(path).unwrap();
+    let result : T = serde_json::from_str(result_raw.as_str()).unwrap();
+
+    Ok(result)    
+}
+
 

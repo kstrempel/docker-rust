@@ -18,14 +18,13 @@ use super::common::*;
 use super::Client;
 use super::error::DockerError;
 
-use self::schema::Image;
+use self::schema::Swarm;
 
-endpoint!(ImagesClient);
+endpoint!(SwarmClient);
 
-impl<'a> ImagesClient<'a> {
-
-    pub fn all(&self) -> Result<Vec<Image>, DockerError> {
-        get_vector(self.client, "images/json")
+impl<'a> SwarmClient<'a> {
+    pub fn get(&self) -> Result<Swarm, DockerError> {
+        get(self.client, "swarm")
     }
 }
 
@@ -35,11 +34,10 @@ mod tests {
     #[test]
     fn it_works() {
         use Client;
-        use images::ImagesClient;
+        use swarm::SwarmClient;
         let client = Client::from_env();
-        let image_client = ImagesClient::new(&client);
-        let images = image_client.all();
-        assert!(images.is_ok());
-        assert!(images.unwrap().len()>1);
+        let swarm_client = SwarmClient::new(&client);
+        let swarm = swarm_client.get();
+        assert!(swarm.is_ok());
     }
 }

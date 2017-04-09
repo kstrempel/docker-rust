@@ -25,7 +25,7 @@ endpoint!(NetworksClient);
 impl<'a> NetworksClient<'a> {
     
     pub fn all(&self) -> Result<Vec<Network>, DockerError> {
-        get(self.client, "networks")
+        get_vector(self.client, "networks")
     }
 }
 

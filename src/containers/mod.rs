@@ -25,7 +25,7 @@ endpoint!(ContainersClient);
 impl<'a> ContainersClient<'a> {
 
     pub fn all(&self) -> Result<Vec<Container>, DockerError> {
-        get(self.client, "containers/json")
+        get_vector(self.client, "containers/json")
     }
 }
 
