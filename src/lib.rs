@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-
 #![crate_type = "lib"]
 #![crate_name = "docker"]
 
@@ -61,7 +60,7 @@ impl Client {
     }
 
     pub fn from_env() -> Client {
-        Client::new("http://v1.26/")
+        Client::new("http://v1.27/")
     }
 
     fn set_curl_client(&self) -> ()  {
