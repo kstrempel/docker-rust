@@ -29,6 +29,7 @@ pub mod images;
 pub mod networks;
 pub mod containers;
 pub mod swarm;
+pub mod volumes;
 
 use std::str::*;
 use std::cell::RefCell;
@@ -40,6 +41,7 @@ use images::ImagesClient;
 use containers::ContainersClient;
 use networks::NetworksClient;
 use swarm::SwarmClient;
+use volumes::VolumesClient;
 
 use std::error::Error;
 
@@ -104,5 +106,9 @@ impl Client {
 
     pub fn networks(&self) -> NetworksClient {
         NetworksClient::new(self)
+    } 
+
+    pub fn volumes(&self) -> VolumesClient {
+        VolumesClient::new(self)
     } 
 }
