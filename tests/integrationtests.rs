@@ -11,4 +11,5 @@ fn get_all(){
     assert!(client.networks().all().unwrap().len()>1);
     assert!(client.swarm().get().is_ok());
     assert!(client.volumes().get().is_ok());
+    assert!(client.tasks().get().is_ok());
 }

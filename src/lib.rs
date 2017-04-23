@@ -30,6 +30,7 @@ pub mod networks;
 pub mod containers;
 pub mod swarm;
 pub mod volumes;
+pub mod tasks;
 
 use std::str::*;
 use std::cell::RefCell;
@@ -42,6 +43,7 @@ use containers::ContainersClient;
 use networks::NetworksClient;
 use swarm::SwarmClient;
 use volumes::VolumesClient;
+use tasks::TasksClient;
 
 use std::error::Error;
 
@@ -111,4 +113,8 @@ impl Client {
     pub fn volumes(&self) -> VolumesClient {
         VolumesClient::new(self)
     } 
+
+    pub fn tasks(&self) -> TasksClient {
+        TasksClient::new(self)
+    }
 }

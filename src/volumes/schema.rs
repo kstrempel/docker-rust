@@ -72,3 +72,87 @@ pub struct Volumes {
     #[serde(rename = "Warnings")]
     pub warnings : Vec<String>
 }
+
+// Optional configuration for the `tmpfs` type.
+#[derive(Serialize, Deserialize, Debug)]
+pub struct MountTmpfsOptions {
+
+   // The size for the tmpfs mount in bytes.
+   #[serde(rename = "SizeBytes")]
+   #[serde(skip_serializing_if = "Option::is_none")]
+   pub size_bytes : Option<i64>,
+
+   // The permission mode for the tmpfs mount in an integer.
+   #[serde(rename = "Mode")]
+   #[serde(skip_serializing_if = "Option::is_none")]
+   pub mode : Option<i32>
+}
+
+// Map of driver specific options
+#[derive(Serialize, Deserialize, Debug)]
+pub struct MountVolumeOptionsDriverConfig {
+
+   // Name of the driver to use to create the volume.
+   #[serde(rename = "Name")]
+   #[serde(skip_serializing_if = "Option::is_none")]
+   pub name : Option<String>,
+
+   // key/value map of driver specific options.
+   #[serde(rename = "Options")]
+   #[serde(skip_serializing_if = "Option::is_none")]
+   pub options : Option<HashMap<String,String>>
+}
+
+
+// Optional configuration for the `volume` type.
+#[derive(Serialize, Deserialize, Debug)]
+pub struct MountVolumeOptions {
+
+   // Populate volume with data from the target.
+   #[serde(rename = "NoCopy")]
+   #[serde(skip_serializing_if = "Option::is_none")]
+   pub no_copy : Option<bool>,
+
+   // User-defined key/value metadata.
+   #[serde(rename = "Labels")]
+   #[serde(skip_serializing_if = "Option::is_none")]
+   pub labels : Option<HashMap<String,String>>,
+
+   #[serde(rename = "DriverConfig")]
+   #[serde(skip_serializing_if = "Option::is_none")]
+   pub driver_config : Option<MountVolumeOptionsDriverConfig>
+}
+
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct Mount {
+
+   // Container path.
+   #[serde(rename = "Target")]
+   #[serde(skip_serializing_if = "Option::is_none")]
+   pub target : Option<String>,
+
+   // The mount type. Available types:  - `bind` Mounts a file or directory from the host into the container. Must exist prior to creating the container. - `volume` Creates a volume with the given name and options (or uses a pre-existing volume with the same name and options). These are **not** removed when the container is removed. - `tmpfs` Create a tmpfs with the given options. The mount source cannot be specified for tmpfs. 
+   #[serde(rename = "Type")]
+   #[serde(skip_serializing_if = "Option::is_none")]
+   pub mount_type : Option<String>,
+
+   // Whether the mount should be read-only.
+   #[serde(rename = "ReadOnly")]
+   #[serde(skip_serializing_if = "Option::is_none")]
+   pub read_only : Option<bool>,
+
+   // Optional configuration for the `bind` type.
+   //#[serde(rename = "BindOptions")]
+   //#[serde(skip_serializing_if = "Option::is_none")]
+   //pub bind_options : Option<interface{}>,
+
+   #[serde(rename = "VolumeOptions")]
+   #[serde(skip_serializing_if = "Option::is_none")]
+   pub volume_options : Option<MountVolumeOptions>,
+
+   #[serde(rename = "TmpfsOptions")]
+   #[serde(skip_serializing_if = "Option::is_none")]
+   pub tmpfs_options : Option<MountTmpfsOptions>
+}
+
