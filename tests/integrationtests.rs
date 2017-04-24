@@ -12,4 +12,5 @@ fn get_all(){
     assert!(client.swarm().get().is_ok());
     assert!(client.volumes().get().is_ok());
     assert!(client.tasks().get().is_ok());
+    assert!(client.secrets().all().unwrap().len()==0);
 }
