@@ -31,11 +31,13 @@ pub mod containers;
 pub mod swarm;
 pub mod volumes;
 pub mod tasks;
+pub mod secrets;
 
 use std::str::*;
 use std::cell::RefCell;
 
 use curl::easy::Easy;
+use std::error::Error;
 
 use error::DockerError;
 use images::ImagesClient;
@@ -44,8 +46,7 @@ use networks::NetworksClient;
 use swarm::SwarmClient;
 use volumes::VolumesClient;
 use tasks::TasksClient;
-
-use std::error::Error;
+use secrets::SecretsClient;
 
 
 pub struct Client {
@@ -116,5 +117,9 @@ impl Client {
 
     pub fn tasks(&self) -> TasksClient {
         TasksClient::new(self)
+    }
+
+    pub fn secrets(&self) -> SecretsClient {
+        SecretsClient::new(self)
     }
 }
