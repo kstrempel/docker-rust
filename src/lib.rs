@@ -96,6 +96,30 @@ impl Client {
         Ok(String::from_utf8(result).unwrap())
     }   
 
+    fn post(&self, url: &str, payload: &[u8]) -> Result<(), DockerError> {
+        let mut result = Vec::new();
+        let mut curl = self.curl.borrow_mut();
+        let real_url = format!("{}{}", self.api_url, url);
+        curl.post(true);
+        curl.post_field_size(payload.len() as u64);
+
+        match curl.url(real_url.as_str()) {
+            Ok(_) => {            
+                let mut transfer = curl.transfer();
+                transfer.write_function(|data| {
+                    result.extend_from_slice(data);
+                    Ok(data.len())
+                }).unwrap();
+                transfer.perform().unwrap();
+            },
+            Err(err) => {
+                print!("Mein Text {}", err.description());
+            }
+        };
+
+        Ok(())
+    }
+
     pub fn images(&self) -> ImagesClient {
         ImagesClient::new(self)
     } 

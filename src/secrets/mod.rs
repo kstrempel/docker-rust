@@ -18,13 +18,17 @@ use super::common::*;
 use super::Client;
 use super::error::DockerError;
 
-use self::schema::Secret;
+use self::schema::{Secret, SecretSpec};
 
 endpoint!(SecretsClient);
 
 impl<'a> SecretsClient<'a> {
     pub fn all(&self) -> Result<Vec<Secret>, DockerError> {
         get_vector(self.client, "secrets")
+    }
+
+    pub fn create(&self, spec : &SecretSpec) -> Result<(), DockerError> {
+        post(self.client, "secrects", spec)    
     }
 }
 
