@@ -35,6 +35,7 @@ pub mod secrets;
 
 use std::str::*;
 use std::cell::RefCell;
+use std::io::Read;
 
 use curl::easy::Easy;
 use std::error::Error;
@@ -96,26 +97,34 @@ impl Client {
         Ok(String::from_utf8(result).unwrap())
     }   
 
-    fn post(&self, url: &str, payload: &[u8]) -> Result<(), DockerError> {
+    fn post(&self, url: &str, mut payload: &[u8]) -> Result<(), DockerError> {
         let mut result = Vec::new();
-        let mut curl = self.curl.borrow_mut();
-        let real_url = format!("{}{}", self.api_url, url);
-        curl.post(true);
-        curl.post_field_size(payload.len() as u64);
-
+//        let mut curl = self.curl.borrow_mut();
+        let mut curl = Easy::new();
+//        let real_url = format!("{}{}", self.api_url, url);
+        let real_url = format!("http://localhost:8080/");
         match curl.url(real_url.as_str()) {
-            Ok(_) => {            
-                let mut transfer = curl.transfer();
-                transfer.write_function(|data| {
-                    result.extend_from_slice(data);
-                    Ok(data.len())
-                }).unwrap();
-                transfer.perform().unwrap();
+            Ok(_) => {
+
+                    curl.post(true).unwrap();        
+                    curl.post_field_size(payload.len() as u64).unwrap();
+                    let mut send_transfer = curl.transfer();
+                    send_transfer.read_function(|buf| {
+                            Ok(payload.read(buf).unwrap_or(0))
+                    }).unwrap();
+                    println!("Sent all data");
+                    send_transfer.write_function(|data| {
+                        result.extend_from_slice(data);
+                        Ok(data.len())
+                    }).unwrap();
+                    send_transfer.perform().unwrap();
             },
             Err(err) => {
-                print!("Mein Text {}", err.description());
+                println!("Mein Text {}", err.description());
             }
         };
+
+        println!("{}", String::from_utf8(result).unwrap()); 
 
         Ok(())
     }

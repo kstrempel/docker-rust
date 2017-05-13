@@ -49,6 +49,7 @@ pub fn get<T : Deserialize> (client: &Client, path : &str) -> Result<T, DockerEr
 
 pub fn post<T : Serialize> (client: &Client, path : &str, payload : &T) -> Result<(), DockerError> {
     let payload_raw = serde_json::to_string(payload).unwrap();
+    println!("The payload {:?}", payload_raw);
     let result_raw = client.post(path, payload_raw.as_bytes());
 
     Ok(())
