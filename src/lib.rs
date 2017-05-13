@@ -80,6 +80,7 @@ impl Client {
         let mut result = Vec::new();
         let real_url = format!("{}{}", self.api_url, url);
         let mut curl = self.curl.borrow_mut();
+        curl.get(true).unwrap();        
         match curl.url(real_url.as_str()) {
             Ok(_) => {            
                 let mut transfer = curl.transfer();
@@ -99,25 +100,22 @@ impl Client {
 
     fn post(&self, url: &str, mut payload: &[u8]) -> Result<(), DockerError> {
         let mut result = Vec::new();
-//        let mut curl = self.curl.borrow_mut();
-        let mut curl = Easy::new();
-//        let real_url = format!("{}{}", self.api_url, url);
-        let real_url = format!("http://localhost:8080/");
+        let mut curl = self.curl.borrow_mut();
+        let real_url = format!("{}{}", self.api_url, url);
         match curl.url(real_url.as_str()) {
             Ok(_) => {
-
-                    curl.post(true).unwrap();        
-                    curl.post_field_size(payload.len() as u64).unwrap();
-                    let mut send_transfer = curl.transfer();
-                    send_transfer.read_function(|buf| {
-                            Ok(payload.read(buf).unwrap_or(0))
-                    }).unwrap();
-                    println!("Sent all data");
-                    send_transfer.write_function(|data| {
-                        result.extend_from_slice(data);
-                        Ok(data.len())
-                    }).unwrap();
-                    send_transfer.perform().unwrap();
+                curl.post(true).unwrap();        
+                curl.post_field_size(payload.len() as u64).unwrap();
+                let mut send_transfer = curl.transfer();
+                send_transfer.read_function(|buf| {
+                        Ok(payload.read(buf).unwrap_or(0))
+                }).unwrap();
+                println!("Sent all data");
+                send_transfer.write_function(|data| {
+                    result.extend_from_slice(data);
+                    Ok(data.len())
+                }).unwrap();
+                send_transfer.perform().unwrap();
             },
             Err(err) => {
                 println!("Mein Text {}", err.description());

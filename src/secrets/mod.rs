@@ -56,9 +56,9 @@ mod tests {
         let secret_client = SecretsClient::new(&client);
 
         let secret = SecretSpec{
-                        name: Option::None,
+                        name: Some(String::from("MySecret")),
                         labels: Option::Some(HashMap::new()),
-                        data: Option::None
+                        data: Some(String::from("VEhJUyBJUyBOT1QgQSBSRUFMIENFUlRJRklDQVRFCg=="))
                      };
         let result = secret_client.create(&secret);
 

@@ -55,5 +55,5 @@ pub struct SecretSpec {
    // Base64-url-safe-encoded secret data
    #[serde(rename = "Data")]
    #[serde(skip_serializing_if = "Option::is_none")]
-   pub data : Option<Vec<String>>
+   pub data : Option<String>
 }
