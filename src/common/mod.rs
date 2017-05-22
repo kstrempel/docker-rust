@@ -14,7 +14,7 @@
 
 use super::Client;
 use super::error::DockerError;
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use serde_json;
 
 macro_rules! endpoint {
@@ -47,4 +47,9 @@ pub fn get<T : Deserialize> (client: &Client, path : &str) -> Result<T, DockerEr
     Ok(result)    
 }
 
+pub fn post<T : Serialize> (client: &Client, path : &str, payload : &T) -> Result<(), DockerError> {
+    let payload_raw = serde_json::to_string(payload).unwrap();
+    let result_raw = client.post(path, payload_raw.as_bytes());
 
+    Ok(())
+}

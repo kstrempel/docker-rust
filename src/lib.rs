@@ -35,6 +35,7 @@ pub mod secrets;
 
 use std::str::*;
 use std::cell::RefCell;
+use std::io::Read;
 
 use curl::easy::Easy;
 use std::error::Error;
@@ -79,22 +80,43 @@ impl Client {
         let mut result = Vec::new();
         let real_url = format!("{}{}", self.api_url, url);
         let mut curl = self.curl.borrow_mut();
-        match curl.url(real_url.as_str()) {
-            Ok(_) => {            
-                let mut transfer = curl.transfer();
-                transfer.write_function(|data| {
-                    result.extend_from_slice(data);
-                    Ok(data.len())
-                }).unwrap();
-                transfer.perform().unwrap();
-            },
-            Err(err) => {
-                print!("Mein Text {}", err.description());
-            }
-        };
-        
+        curl.get(true).unwrap();        
+        curl.url(real_url.as_str()).unwrap();
+
+        {
+            let mut transfer = curl.transfer();
+            transfer.write_function(|data| {
+                result.extend_from_slice(data);
+                Ok(data.len())
+            }).unwrap();
+            transfer.perform().unwrap()
+        }
+
         Ok(String::from_utf8(result).unwrap())
     }   
+
+    fn post(&self, url: &str, mut payload: &[u8]) -> Result<String, DockerError> {
+        let mut result = Vec::new();
+        let mut curl = self.curl.borrow_mut();
+        let real_url = format!("{}{}", self.api_url, url);
+        curl.url(real_url.as_str()).unwrap();
+        curl.post(true).unwrap();        
+        curl.post_field_size(payload.len() as u64).unwrap();
+
+        {
+            let mut send_transfer = curl.transfer();
+            send_transfer.read_function(|buf| {
+                    Ok(payload.read(buf).unwrap_or(0))
+            }).unwrap();
+            send_transfer.write_function(|data| {
+                result.extend_from_slice(data);
+                Ok(data.len())
+            }).unwrap();
+            send_transfer.perform().unwrap();
+        }
+
+        Ok(String::from_utf8(result).unwrap())
+    }
 
     pub fn images(&self) -> ImagesClient {
         ImagesClient::new(self)

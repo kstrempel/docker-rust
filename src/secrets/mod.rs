@@ -18,13 +18,17 @@ use super::common::*;
 use super::Client;
 use super::error::DockerError;
 
-use self::schema::Secret;
+use self::schema::{Secret, SecretSpec};
 
 endpoint!(SecretsClient);
 
 impl<'a> SecretsClient<'a> {
     pub fn all(&self) -> Result<Vec<Secret>, DockerError> {
         get_vector(self.client, "secrets")
+    }
+
+    pub fn create(&self, spec : &SecretSpec) -> Result<(), DockerError> {
+        post(self.client, "secrets/create", spec)
     }
 }
 
@@ -39,6 +43,27 @@ mod tests {
         let secret_client = SecretsClient::new(&client);
         let secrets = secret_client.all();
         assert!(secrets.is_ok());
-        assert!(secrets.unwrap().len()==0);
+//        assert!(secrets.unwrap().len()==0);
+    }
+
+    #[test]
+    fn create_secret() {
+        use std::collections::HashMap;
+        use Client;
+        use secrets::schema::SecretSpec;
+        use secrets::SecretsClient;
+        let client = Client::from_env();
+        let secret_client = SecretsClient::new(&client);
+
+        let secret = SecretSpec{
+                        name: Some(String::from("MySecret")),
+                        labels: Option::Some(HashMap::new()),
+                        data: Some(String::from("VEhJUyBJUyBOT1QgQSBSRUFMIENFUlRJRklDQVRFCg=="))
+                     };
+        let result = secret_client.create(&secret);
+
+        let secrets = secret_client.all();
+        assert!(secrets.is_ok());
+        assert!(secrets.unwrap().len()==1);        
     }
 }

@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+use std::collections::HashMap;
 use tasks::schema::ObjectVersion;
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -37,3 +38,23 @@ pub struct Secret {
    //#[serde(skip_serializing_if = "Option::is_none")]
    //pub spec : Option<ServiceSpec>
 }
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct SecretSpec {
+
+   // User-defined name of the secret.
+   #[serde(rename = "Name")]
+   #[serde(skip_serializing_if = "Option::is_none")]
+   pub name : Option<String>,
+
+   // User-defined key/value metadata.
+   #[serde(rename = "Labels")]
+   #[serde(skip_serializing_if = "Option::is_none")]
+   pub labels : Option<HashMap<String,String>>,
+
+   // Base64-url-safe-encoded secret data
+   #[serde(rename = "Data")]
+   #[serde(skip_serializing_if = "Option::is_none")]
+   pub data : Option<String>
+}
+
