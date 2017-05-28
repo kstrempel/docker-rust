@@ -27,8 +27,13 @@ impl<'a> SecretsClient<'a> {
         get_vector(self.client, "secrets")
     }
 
-    pub fn create(&self, spec : &SecretSpec) -> Result<(), DockerError> {
+    pub fn create(&self, spec: &SecretSpec) -> Result<(), DockerError> {
         post(self.client, "secrets/create", spec)
+    }
+
+    pub fn delete(&self, id: &String) -> Result<(), DockerError> {
+        let url = format!("secrets/{}", id);
+        delete(self.client, url.as_str())
     }
 }
 
@@ -47,7 +52,7 @@ mod tests {
     }
 
     #[test]
-    fn create_secret() {
+    fn create_and_delete_secret() {
         use std::collections::HashMap;
         use Client;
         use secrets::schema::SecretSpec;
@@ -64,6 +69,18 @@ mod tests {
 
         let secrets = secret_client.all();
         assert!(secrets.is_ok());
-        assert!(secrets.unwrap().len()==1);        
+        assert!(secrets.unwrap().len()==0);        
     }
+
+    #[test]
+    fn delete_secret() {
+        use secrets::SecretsClient;
+        use Client;
+        let client = Client::from_env();
+        let secret_client = SecretsClient::new(&client);
+
+        let result = secret_client.delete(&String::from("o12uix0o96y2px62r2i8l6wpt"));
+        assert!(result.is_ok());
+    }        
+    
 }

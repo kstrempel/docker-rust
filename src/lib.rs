@@ -118,6 +118,26 @@ impl Client {
         Ok(String::from_utf8(result).unwrap())
     }
 
+
+    fn delete(&self, url: &str) -> Result<String, DockerError> {
+        let mut result = Vec::new();
+        let real_url = format!("{}{}", self.api_url, url);
+        let mut curl = self.curl.borrow_mut();
+        curl.custom_request("DELETE").unwrap();        
+        curl.url(real_url.as_str()).unwrap();
+
+        {
+            let mut transfer = curl.transfer();
+            transfer.write_function(|data| {
+                result.extend_from_slice(data);
+                Ok(data.len())
+            }).unwrap();
+            transfer.perform().unwrap()
+        }
+
+        Ok(String::from_utf8(result).unwrap())
+    }   
+
     pub fn images(&self) -> ImagesClient {
         ImagesClient::new(self)
     } 
