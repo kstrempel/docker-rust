@@ -53,3 +53,10 @@ pub fn post<T : Serialize> (client: &Client, path : &str, payload : &T) -> Resul
 
     Ok(())
 }
+
+pub fn delete(client: &Client, path : &str) -> Result<(), DockerError> {
+    let result_raw = client.delete(path).unwrap();
+//    let result : T = serde_json::from_str(result_raw.as_str()).unwrap();
+
+    Ok(())    
+}
