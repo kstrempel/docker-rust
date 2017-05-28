@@ -27,6 +27,11 @@ impl<'a> SecretsClient<'a> {
         get_vector(self.client, "secrets")
     }
 
+    pub fn inspect(&self, id: &String) -> Result<Secret, DockerError> {
+        let url = format!("secrects/{}", id);
+        get(self.client, url.as_str())
+    }
+
     pub fn create(&self, spec: &SecretSpec) -> Result<(), DockerError> {
         post(self.client, "secrets/create", spec)
     }
@@ -83,4 +88,14 @@ mod tests {
         assert!(result.is_ok());
     }        
     
+    #[test]
+    fn inspect_secret() {
+        use secrets::SecretsClient;
+        use Client;
+        let client = Client::from_env();
+        let secret_client = SecretsClient::new(&client);
+        
+        let result = secret_client.inspect(&String::from("gucl9mst94yfe2yvkpmhz0hr2"));
+        assert!(result.is_ok());
+    }
 }
