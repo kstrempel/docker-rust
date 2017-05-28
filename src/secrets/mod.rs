@@ -36,6 +36,11 @@ impl<'a> SecretsClient<'a> {
         post(self.client, "secrets/create", spec)
     }
 
+    pub fn update(&self, id: &String, spec: &SecretSpec) -> Result<(), DockerError> {
+        let url = format!("secrets/{}/update", id);
+        post(self.client, url.as_str(), spec)
+    }
+
     pub fn delete(&self, id: &String) -> Result<(), DockerError> {
         let url = format!("secrets/{}", id);
         delete(self.client, url.as_str())
@@ -98,4 +103,24 @@ mod tests {
         let result = secret_client.inspect(&String::from("gucl9mst94yfe2yvkpmhz0hr2"));
         assert!(result.is_ok());
     }
+
+    #[test]
+    fn update_secret() {
+        use std::collections::HashMap;
+        use secrets::SecretsClient;
+        use Client;
+        use secrets::schema::SecretSpec;
+        let client = Client::from_env();
+        let secret_client = SecretsClient::new(&client);
+        
+        let secret = SecretSpec{
+                        name: Some(String::from("MySecretUpdated")),
+                        labels: Option::Some(HashMap::new()),
+                        data: Some(String::from("VEhJUyBJUyBOT1QgQSBSRUFMIENFUlRJRklDQVRFCg=="))
+                     };
+
+        let result = secret_client.update(&String::from("gucl9mst94yfe2yvkpmhz0hr2"), &secret);
+        assert!(result.is_ok());
+    }
+    
 }
