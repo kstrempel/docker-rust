@@ -33,30 +33,30 @@ macro_rules! endpoint {
     )
 }
 
-pub fn get_vector<T : Deserialize> (client: &Client, path : &str) -> Result<Vec<T>, DockerError> {
+pub fn get_vector<T: Deserialize> (client: &Client, path : &str) -> Result<Vec<T>, DockerError> {
     let result_raw = client.get(path).unwrap();
     let results : Vec<T> = serde_json::from_str(result_raw.as_str()).unwrap();
 
     Ok(results)    
 }
 
-pub fn get<T : Deserialize> (client: &Client, path : &str) -> Result<T, DockerError> {
+pub fn get<T: Deserialize> (client: &Client, path : &str) -> Result<T, DockerError> {
     let result_raw = client.get(path).unwrap();
     let result : T = serde_json::from_str(result_raw.as_str()).unwrap();
 
     Ok(result)    
 }
 
-pub fn post<T : Serialize> (client: &Client, path : &str, payload : &T) -> Result<(), DockerError> {
+pub fn post<T: Serialize, R: Deserialize> (client: &Client, path : &str, payload : &T) -> Result<R, DockerError> {
     let payload_raw = serde_json::to_string(payload).unwrap();
-    let result_raw = client.post(path, payload_raw.as_bytes());
+    let result_raw = client.post(path, payload_raw.as_bytes()).unwrap();
+    let result : R = serde_json::from_str(result_raw.as_str()).unwrap();
 
-    Ok(())
+    Ok(result)
 }
 
 pub fn delete(client: &Client, path : &str) -> Result<(), DockerError> {
     let result_raw = client.delete(path).unwrap();
-//    let result : T = serde_json::from_str(result_raw.as_str()).unwrap();
 
     Ok(())    
 }

@@ -23,104 +23,54 @@ use self::schema::{Secret, SecretSpec};
 endpoint!(SecretsClient);
 
 impl<'a> SecretsClient<'a> {
+    
+    /// Returns a list of all secrets
     pub fn all(&self) -> Result<Vec<Secret>, DockerError> {
         get_vector(self.client, "secrets")
     }
 
+    /// Returns a specific secret
+    ///
+    /// # Example
+    /// ```    
+    /// use std::collections::HashMap;
+    /// use docker::Client;
+    /// use docker::secrets::SecretsClient;
+    /// use docker::secrets::schema::SecretSpec;
+    /// let client = Client::from_env();
+    /// let secret = SecretSpec{
+    ///                    name: Some(String::from("DockerRustMySecret")),
+    ///                    labels: Option::Some(HashMap::new()),
+    ///                    data: Some(String::from("VEhJUyBJUyBOT1QgQSBSRUFMIENFUlRJRklDQVRFCg=="))
+    ///                 };  
+    /// let secret_client = SecretsClient::new(&client);
+    /// let new_secret = secret_client.create(&secret).unwrap();
+    /// let secret_id = new_secret.id.unwrap_or_default();
+    /// let inspected_secret = secret_client.inspect(&secret_id).unwrap();
+    /// let inspected_secret_spec = inspected_secret.spec.unwrap();
+    /// assert!(inspected_secret_spec.name == secret.name);  
+    /// secret_client.delete(&secret_id).unwrap();
+    /// ```    
     pub fn inspect(&self, id: &String) -> Result<Secret, DockerError> {
-        let url = format!("secrects/{}", id);
+        let url = format!("secrets/{}", id);
         get(self.client, url.as_str())
     }
 
-    pub fn create(&self, spec: &SecretSpec) -> Result<(), DockerError> {
+    /// Creates a new secret
+    pub fn create(&self, spec: &SecretSpec) -> Result<Secret, DockerError> {
         post(self.client, "secrets/create", spec)
     }
 
-    pub fn update(&self, id: &String, spec: &SecretSpec) -> Result<(), DockerError> {
+    /// Updates a existing secret
+    pub fn update(&self, id: &String, spec: &SecretSpec) -> Result<SecretSpec, DockerError> {
         let url = format!("secrets/{}/update", id);
         post(self.client, url.as_str(), spec)
     }
 
+    /// Deletes a secret
     pub fn delete(&self, id: &String) -> Result<(), DockerError> {
         let url = format!("secrets/{}", id);
         delete(self.client, url.as_str())
     }
 }
 
-
-#[cfg(test)]
-mod tests {
-    #[test]
-    fn it_works() {
-        use Client;
-        use secrets::SecretsClient;
-        let client = Client::from_env();
-        let secret_client = SecretsClient::new(&client);
-        let secrets = secret_client.all();
-        assert!(secrets.is_ok());
-//        assert!(secrets.unwrap().len()==0);
-    }
-
-    #[test]
-    fn create_and_delete_secret() {
-        use std::collections::HashMap;
-        use Client;
-        use secrets::schema::SecretSpec;
-        use secrets::SecretsClient;
-        let client = Client::from_env();
-        let secret_client = SecretsClient::new(&client);
-
-        let secret = SecretSpec{
-                        name: Some(String::from("MySecret")),
-                        labels: Option::Some(HashMap::new()),
-                        data: Some(String::from("VEhJUyBJUyBOT1QgQSBSRUFMIENFUlRJRklDQVRFCg=="))
-                     };
-        let result = secret_client.create(&secret);
-
-        let secrets = secret_client.all();
-        assert!(secrets.is_ok());
-        assert!(secrets.unwrap().len()==0);        
-    }
-
-    #[test]
-    fn delete_secret() {
-        use secrets::SecretsClient;
-        use Client;
-        let client = Client::from_env();
-        let secret_client = SecretsClient::new(&client);
-
-        let result = secret_client.delete(&String::from("o12uix0o96y2px62r2i8l6wpt"));
-        assert!(result.is_ok());
-    }        
-    
-    #[test]
-    fn inspect_secret() {
-        use secrets::SecretsClient;
-        use Client;
-        let client = Client::from_env();
-        let secret_client = SecretsClient::new(&client);
-        
-        let result = secret_client.inspect(&String::from("gucl9mst94yfe2yvkpmhz0hr2"));
-        assert!(result.is_ok());
-    }
-
-    #[test]
-    fn update_secret() {
-        use std::collections::HashMap;
-        use secrets::SecretsClient;
-        use Client;
-        use secrets::schema::SecretSpec;
-        let client = Client::from_env();
-        let secret_client = SecretsClient::new(&client);
-        
-        let secret = SecretSpec{
-                        name: Some(String::from("MySecretUpdated")),
-                        labels: Option::Some(HashMap::new()),
-                        data: Some(String::from("VEhJUyBJUyBOT1QgQSBSRUFMIENFUlRJRklDQVRFCg=="))
-                     };
-
-        let result = secret_client.update(&String::from("gucl9mst94yfe2yvkpmhz0hr2"), &secret);
-        assert!(result.is_ok());
-    }
-    
-}

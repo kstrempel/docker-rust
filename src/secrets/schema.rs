@@ -34,9 +34,9 @@ pub struct Secret {
    #[serde(skip_serializing_if = "Option::is_none")]
    pub updated_at : Option<String>,
 
-   //#[serde(rename = "Spec")]
-   //#[serde(skip_serializing_if = "Option::is_none")]
-   //pub spec : Option<ServiceSpec>
+   #[serde(rename = "Spec")]
+   #[serde(skip_serializing_if = "Option::is_none")]
+   pub spec : Option<SecretSpec>
 }
 
 #[derive(Serialize, Deserialize, Debug)]
