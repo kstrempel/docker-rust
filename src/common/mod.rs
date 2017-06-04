@@ -11,11 +11,22 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+pub mod schema;
+
+use serde::{Deserialize, Serialize};
+use serde_json;
 
 use super::Client;
 use super::error::DockerError;
-use serde::{Deserialize, Serialize};
-use serde_json;
+
+use self::schema::Message;
+
+
+pub struct HttpResult {
+    pub response_code: u32,
+    pub body : String,
+}
+
 
 macro_rules! endpoint {
     ($sty:ident) => (
@@ -33,6 +44,7 @@ macro_rules! endpoint {
     )
 }
 
+// generic function to return a list from a json request 
 pub fn get_vector<T: Deserialize> (client: &Client, path : &str) -> Result<Vec<T>, DockerError> {
     let result_raw = client.get(path).unwrap();
     let results : Vec<T> = serde_json::from_str(result_raw.as_str()).unwrap();
@@ -40,6 +52,7 @@ pub fn get_vector<T: Deserialize> (client: &Client, path : &str) -> Result<Vec<T
     Ok(results)    
 }
 
+// generic function to return a object from a json request
 pub fn get<T: Deserialize> (client: &Client, path : &str) -> Result<T, DockerError> {
     let result_raw = client.get(path).unwrap();
     let result : T = serde_json::from_str(result_raw.as_str()).unwrap();
@@ -47,6 +60,7 @@ pub fn get<T: Deserialize> (client: &Client, path : &str) -> Result<T, DockerErr
     Ok(result)    
 }
 
+// generic function to post a json object and retriews a json object
 pub fn post<T: Serialize, R: Deserialize> (client: &Client, path : &str, payload : &T) -> Result<R, DockerError> {
     let payload_raw = serde_json::to_string(payload).unwrap();
     let result_raw = client.post(path, payload_raw.as_bytes()).unwrap();
@@ -55,8 +69,15 @@ pub fn post<T: Serialize, R: Deserialize> (client: &Client, path : &str, payload
     Ok(result)
 }
 
+// generic function to call a delete api
 pub fn delete(client: &Client, path : &str) -> Result<(), DockerError> {
-    let result_raw = client.delete(path).unwrap();
+    let response = client.delete(path)?;
 
-    Ok(())    
+    match response.response_code {
+        204 => Ok(()),
+        _ => {
+            let message : Message = serde_json::from_str(&response.body)?;
+            Err(DockerError::Docker(message.message))
+        }
+    }
 }

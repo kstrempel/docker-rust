@@ -12,16 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use serde_json;
-
-#[derive(Debug)]
-pub enum DockerError {
-    Docker(String),
-    Json(serde_json::error::Error)
+#[derive(Serialize, Deserialize, Debug)]
+pub struct Message {
+    pub message : String
 }
 
-impl From<serde_json::error::Error> for DockerError {
-    fn from(err: serde_json::error::Error) -> DockerError {
-        DockerError::Json(err)
-    }
-}

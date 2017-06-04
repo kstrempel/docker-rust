@@ -41,6 +41,7 @@ use curl::easy::Easy;
 use std::error::Error;
 
 use error::DockerError;
+use common::HttpResult;
 use images::ImagesClient;
 use containers::ContainersClient;
 use networks::NetworksClient;
@@ -119,7 +120,7 @@ impl Client {
     }
 
 
-    fn delete(&self, url: &str) -> Result<String, DockerError> {
+    fn delete(&self, url: &str) -> Result<HttpResult, DockerError> {
         let mut result = Vec::new();
         let real_url = format!("{}{}", self.api_url, url);
         let mut curl = self.curl.borrow_mut();
@@ -132,10 +133,11 @@ impl Client {
                 result.extend_from_slice(data);
                 Ok(data.len())
             }).unwrap();
-            transfer.perform().unwrap()
+            transfer.perform().unwrap();
         }
 
-        Ok(String::from_utf8(result).unwrap())
+        Ok(HttpResult{response_code: curl.response_code().unwrap(),
+                      body: String::from_utf8(result).unwrap()})
     }   
 
     pub fn images(&self) -> ImagesClient {
