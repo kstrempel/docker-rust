@@ -38,7 +38,6 @@ use std::cell::RefCell;
 use std::io::Read;
 
 use curl::easy::Easy;
-use std::error::Error;
 
 use error::DockerError;
 use common::HttpResult;
@@ -77,7 +76,7 @@ impl Client {
         let _ = curl.unix_socket("/var/run/docker.sock");
     }
 
-    fn get(&self, url: &str) -> Result<String, DockerError> {
+    fn get(&self, url: &str) -> Result<HttpResult, DockerError> {
         let mut result = Vec::new();
         let real_url = format!("{}{}", self.api_url, url);
         let mut curl = self.curl.borrow_mut();
@@ -93,30 +92,33 @@ impl Client {
             transfer.perform().unwrap()
         }
 
-        Ok(String::from_utf8(result).unwrap())
+        Ok(HttpResult{response_code: curl.response_code().unwrap(),
+                      body: String::from_utf8(result).unwrap()})
     }   
 
-    fn post(&self, url: &str, mut payload: &[u8]) -> Result<String, DockerError> {
+    fn post(&self, url: &str, mut payload: &[u8]) -> Result<HttpResult, DockerError> {
         let mut result = Vec::new();
         let mut curl = self.curl.borrow_mut();
         let real_url = format!("{}{}", self.api_url, url);
         curl.url(real_url.as_str()).unwrap();
-        curl.post(true).unwrap();        
+        curl.post(true).unwrap();
         curl.post_field_size(payload.len() as u64).unwrap();
 
         {
-            let mut send_transfer = curl.transfer();
-            send_transfer.read_function(|buf| {
-                    Ok(payload.read(buf).unwrap_or(0))
+            let mut transfer = curl.transfer();
+            transfer.read_function(|buf| {
+                Ok(payload.read(buf).unwrap_or(0))
             }).unwrap();
-            send_transfer.write_function(|data| {
+
+            transfer.write_function(|data| {
                 result.extend_from_slice(data);
                 Ok(data.len())
             }).unwrap();
-            send_transfer.perform().unwrap();
+            transfer.perform().unwrap();
         }
 
-        Ok(String::from_utf8(result).unwrap())
+        Ok(HttpResult{response_code: curl.response_code().unwrap(),
+                      body: String::from_utf8(result).unwrap()})
     }
 
 

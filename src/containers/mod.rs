@@ -28,18 +28,3 @@ impl<'a> ContainersClient<'a> {
         get_vector(self.client, "containers/json")
     }
 }
-
-
-#[cfg(test)]
-mod tests {
-    #[test]
-    fn it_works() {
-        use Client;
-        use containers::ContainersClient;
-        let client = Client::from_env();
-        let container_client = ContainersClient::new(&client);
-        let containers = container_client.all();
-        assert!(containers.is_ok());
-        assert!(containers.unwrap().len()>1);
-    }
-}

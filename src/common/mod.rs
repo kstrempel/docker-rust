@@ -46,28 +46,62 @@ macro_rules! endpoint {
 
 // generic function to return a list from a json request 
 pub fn get_vector<T: Deserialize> (client: &Client, path : &str) -> Result<Vec<T>, DockerError> {
-    let result_raw = client.get(path).unwrap();
-    let results : Vec<T> = serde_json::from_str(result_raw.as_str()).unwrap();
-
-    Ok(results)    
-}
+    let response = client.get(path)?;
+    match response.response_code {
+        200 => {
+            let results : Vec<T> = serde_json::from_str(response.body.as_str())?;
+            Ok(results)            
+        },
+        _ => {
+            let message : Message = serde_json::from_str(&response.body)?;
+            Err(DockerError::Docker(message.message))            
+        }
+    }}
 
 // generic function to return a object from a json request
 pub fn get<T: Deserialize> (client: &Client, path : &str) -> Result<T, DockerError> {
-    let result_raw = client.get(path).unwrap();
-    let result : T = serde_json::from_str(result_raw.as_str()).unwrap();
-
-    Ok(result)    
+    let response = client.get(path)?;
+    match response.response_code {
+        200 => {
+            let result : T = serde_json::from_str(response.body.as_str())?;
+            Ok(result)            
+        },
+        _ => {
+            let message : Message = serde_json::from_str(&response.body)?;
+            Err(DockerError::Docker(message.message))            
+        }
+    }
 }
 
 // generic function to post a json object and retriews a json object
-pub fn post<T: Serialize, R: Deserialize> (client: &Client, path : &str, payload : &T) -> Result<R, DockerError> {
-    let payload_raw = serde_json::to_string(payload).unwrap();
-    let result_raw = client.post(path, payload_raw.as_bytes()).unwrap();
-    let result : R = serde_json::from_str(result_raw.as_str()).unwrap();
+pub fn post<T: Serialize, R: Deserialize> (client: &Client, path : &str, payload : &T, wanted_response: u32) -> Result<R, DockerError> {
+    let payload_raw = serde_json::to_string(payload)?;
+    let response = client.post(path, payload_raw.as_bytes())?;
 
-    Ok(result)
+    if wanted_response == response.response_code {
+        let result : R = serde_json::from_str(response.body.as_str())?;
+        Ok(result)            
+    }
+    else {
+        let message : Message = serde_json::from_str(&response.body)?;
+        Err(DockerError::Docker(message.message))            
+    }
 }
+
+// generic function to post a json object
+pub fn update<T: Serialize> (client: &Client, path : &str, payload : &T, wanted_response: u32) -> Result<(), DockerError> {
+    let payload_raw = serde_json::to_string(payload)?;
+    let response = client.post(path, payload_raw.as_bytes())?;
+
+    if wanted_response == response.response_code {
+        Ok(())            
+    }
+    else {
+        let message : Message = serde_json::from_str(&response.body)?;
+        Err(DockerError::Docker(message.message))            
+    }
+}
+
 
 // generic function to call a delete api
 pub fn delete(client: &Client, path : &str) -> Result<(), DockerError> {

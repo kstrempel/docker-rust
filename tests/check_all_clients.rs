@@ -43,4 +43,3 @@ fn get_all_secrets(){
     let client = Client::from_env();
     assert!(client.secrets().all().is_ok())
 }
-

@@ -35,17 +35,18 @@ impl<'a> SecretsClient<'a> {
     /// ```    
     /// use std::collections::HashMap;
     /// use docker::Client;
-    /// use docker::secrets::SecretsClient;
     /// use docker::secrets::schema::SecretSpec;
     /// let client = Client::from_env();
+    /// let secret_client = client.secrets();
+    /// let labels : HashMap<String,String> = [(String::from("label1"),String::from("entry1")), 
+    ///                                        (String::from("label2"),String::from("entry2"))].iter().cloned().collect();
     /// let secret = SecretSpec{
     ///                    name: Some(String::from("DockerRustMySecret")),
-    ///                    labels: Option::Some(HashMap::new()),
+    ///                    labels: Option::Some(labels),
     ///                    data: Some(String::from("VEhJUyBJUyBOT1QgQSBSRUFMIENFUlRJRklDQVRFCg=="))
     ///                 };  
-    /// let secret_client = SecretsClient::new(&client);
     /// let new_secret = secret_client.create(&secret).unwrap();
-    /// let secret_id = new_secret.id.unwrap_or_default();
+    /// let secret_id = new_secret.id.unwrap();
     /// let inspected_secret = secret_client.inspect(&secret_id).unwrap();
     /// let inspected_secret_spec = inspected_secret.spec.unwrap();
     /// assert!(inspected_secret_spec.name == secret.name);  
@@ -58,13 +59,37 @@ impl<'a> SecretsClient<'a> {
 
     /// Creates a new secret
     pub fn create(&self, spec: &SecretSpec) -> Result<Secret, DockerError> {
-        post(self.client, "secrets/create", spec)
+        post(self.client, "secrets/create", spec, 201)
     }
 
-    /// Updates a existing secret
-    pub fn update(&self, id: &String, spec: &SecretSpec) -> Result<SecretSpec, DockerError> {
-        let url = format!("secrets/{}/update", id);
-        post(self.client, url.as_str(), spec)
+    /// Updates a secret
+    ///
+    /// # Example
+    /// ```    
+    /// use std::collections::HashMap;
+    /// use docker::Client;
+    /// use docker::secrets::schema::SecretSpec;
+    /// let client = Client::from_env();
+    /// let secret_client = client.secrets();
+    /// let secret = SecretSpec{
+    ///                    name: Some(String::from("UpdateDockerRustSecret")),
+    ///                    labels: Option::Some(HashMap::new()),
+    ///                    data: Some(String::from("VEhJUyBJUyBOT1QgQSBSRUFMIENFUlRJRklDQVRFCg=="))
+    ///                 };  
+    /// let new_secret = secret_client.create(&secret).unwrap();
+    /// let secret_id = new_secret.id.unwrap_or_default();
+    /// let to_update_secret = secret_client.inspect(&secret_id).unwrap();
+    /// let version = to_update_secret.version.unwrap().index.unwrap();
+    /// let mut to_update_spec = to_update_secret.spec.unwrap();
+    /// let labels : HashMap<String,String> = [(String::from("label1"),String::from("entry1")), 
+    ///                                        (String::from("label2"),String::from("entry2"))].iter().cloned().collect();
+    /// to_update_spec.labels = Option::Some(labels);
+    /// assert!(secret_client.update(&secret_id, &to_update_spec, version).is_ok());
+    /// secret_client.delete(&secret_id).unwrap();
+    /// ```    
+    pub fn update(&self, id: &String, spec: &SecretSpec, version: i64) -> Result<(), DockerError> {
+        let url = format!("secrets/{}/update?version={}", id, version);
+        update(self.client, url.as_str(), spec, 200)
     }
 
     /// Deletes a secret
